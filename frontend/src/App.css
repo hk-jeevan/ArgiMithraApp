@@ -1,0 +1,58 @@
+:root{
+  --bg: #f4f6fb;
+  --panel: #ffffff;
+  --muted: #7a8595;
+  --accent: #0b6e4f;
+  --accent-2: #1f7bd6;
+  --surface-shadow: 0 6px 18px rgba(23,31,59,0.06);
+  --radius: 10px;
+  --glass: rgba(255,255,255,0.6);
+  --text: #0f1724;
+}
+
+.app-root{
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+.app-main{
+  width:100%;max-width:1100px;margin:28px auto;padding:0 20px;flex:1;display:block;
+}
+
+.home{display:flex;gap:20px;align-items:flex-start}
+.home .welcome{flex:1}
+.home h1{margin:0 0 8px 0;font-size:28px}
+.home p{color:var(--muted);margin:0}
+
+/* center the welcome section */
+.home .welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;background:var(--panel);border-radius:var(--radius);box-shadow:var(--surface-shadow)}
+.home h2{margin-top:8px;font-size:22px;color:var(--accent)}
+
+.tool{background:var(--panel);border-radius:var(--radius);padding:18px;box-shadow:var(--surface-shadow);margin-top:12px}
+.card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:14px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--panel));border-radius:12px;padding:14px;box-shadow:0 4px 12px rgba(15,23,36,0.04);}
+
+.form-row{display:flex;gap:10px;align-items:center;margin:12px 0}
+.form-row input{padding:10px 12px;border-radius:8px;border:1px solid rgba(15,23,36,0.06);background:transparent;outline:none;min-width:160px}
+.form-row button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);color:white;font-weight:700;cursor:pointer}
+.form-row button:disabled{opacity:0.6;cursor:not-allowed}
+
+.note{color:var(--muted);margin-top:12px;line-height:1.5}
+.error{color:#b00020}
+
+img{max-width:100%;height:auto;border-radius:8px}
+
+@media (max-width:880px){
+  .card-grid{grid-template-columns:1fr}
+  .app-main{padding:0 14px}
+}
+
+@media (max-width:480px){
+  .home{flex-direction:column}
+  .home h1{font-size:22px}
+  .tool{padding:12px}
+  .form-row{flex-direction:column;align-items:stretch}
+  .form-row input,.form-row select,.form-row button{width:100%}
+}

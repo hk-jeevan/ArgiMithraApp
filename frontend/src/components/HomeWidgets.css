@@ -1,0 +1,81 @@
+.home-widgets {
+  padding: 18px;
+  width: 100%;
+}
+
+.language-selector {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 15px 0 10px;
+  color: #2b3a4a;
+}
+
+.carousel-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 12px;
+  padding-bottom: 8px;
+  scroll-behavior: smooth;
+}
+
+.carousel-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.carousel-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 5px;
+}
+
+.carousel-card {
+  flex: 0 0 230px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.carousel-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+
+.carousel-card img {
+  width: 100%;
+  height: 110px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+
+.carousel-card h4 {
+  font-size: 15px;
+  font-weight: 600;
+  height: 40px;
+  overflow: hidden;
+}
+
+.carousel-card p {
+  font-size: 13px;
+  color: #4a4a4a;
+  margin: 8px 0;
+  height: 38px;
+  overflow: hidden;
+}
+
+.carousel-card a {
+  font-weight: 600;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.scheme {
+  border-left: 4px solid #009688;
+}

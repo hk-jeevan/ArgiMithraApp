@@ -1,0 +1,97 @@
+.market-container {
+	display: grid;
+	grid-template-columns: 1.4fr 1fr;
+	gap: 20px;
+	padding: 20px;
+	font-family: "Poppins", sans-serif;
+  }
+  
+  .today-box, .search-box {
+	background: #ffffff;
+	border-radius: 14px;
+	padding: 15px;
+	box-shadow: 0px 3px 10px rgba(0,0,0,0.12);
+  }
+  
+  .today-box h2, .search-box h2 {
+	font-size: 20px;
+	margin-bottom: 12px;
+	padding-left: 8px;
+	border-left: 6px solid #05a335;
+  }
+  
+  /* Scrollable Latest Prices Container */
+  .scroll-box {
+	max-height: 80vh;
+	overflow-y: auto;
+	padding-right: 10px;
+  }
+  
+  /* Cards */
+  .market-card {
+	background: linear-gradient(to right, #e8ffe8, #f8fff8);
+	border-radius: 12px;
+	padding: 12px;
+	margin-bottom: 12px;
+	transition: all 0.25s ease;
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	border-left: 5px solid #10b35e;
+  }
+  
+  .market-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+  }
+  
+  /* Crop Icons */
+  .crop-icon {
+	width: 45px;
+	height: 45px;
+  }
+  
+  /* Input Fields */
+  .market-form input {
+	height: 40px;
+	border: 2px solid #009a42;
+	border-radius: 8px;
+	padding: 8px;
+	outline: none;
+	font-size: 14px;
+  }
+  
+  .market-form input:focus {
+	border-color: #007830;
+  }
+  
+  /* Button */
+  button {
+	background: linear-gradient(45deg, #009a42, #00c35a);
+	color: #fff;
+	border: none;
+	padding: 12px;
+	font-weight: bold;
+	font-size: 15px;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: 0.25s ease;
+  }
+  
+  button:hover {
+	transform: scale(1.05);
+  }
+  
+  /* Error Text */
+  .error {
+	color: #d10000;
+	margin-top: 10px;
+	font-weight: bold;
+  }
+  
+  @media(max-width: 900px) {
+	.market-container {
+	  grid-template-columns: 1fr;
+	}
+  }
+  

@@ -1,0 +1,16 @@
+.signin-backdrop{position:fixed;inset:0;background:rgba(5,10,20,0.3);display:flex;align-items:center;justify-content:center}
+.signin-modal{background:var(--panel);padding:18px;border-radius:10px;box-shadow:var(--surface-shadow);width:320px}
+.signin-modal h3{margin:0 0 10px 0}
+.signin-modal input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(15,23,36,0.06);margin-bottom:10px}
+.signin-modal .actions{display:flex;justify-content:flex-end;gap:8px}
+.signin-modal button{padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:white}
+.signin-modal button.secondary{background:transparent;color:var(--text);border:1px solid rgba(15,23,36,0.06)}
+.signin-modal .error{color:#b00020;margin:6px 0}
+.signin-modal .link{background:none;border:none;color:var(--accent-2);cursor:pointer;padding:0}
+.signin-modal input[type="password"]{font-family:inherit}
+
+@media (max-width:480px){
+	.signin-modal{width:92%;padding:14px}
+	.signin-modal .actions{flex-direction:row-reverse}
+	.signin-modal button{width:48%}
+}
