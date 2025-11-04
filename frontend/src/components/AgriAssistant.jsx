@@ -97,7 +97,7 @@ export default function AgriAssistant() {
     setInput("");
     setMessages((ms) => [...ms, { from: "user", text, time: Date.now() }]);
 
-    const reply = await askGemini(text);
+    const reply = await askGemini(text); 
     const finalReply =
       reply ||
       (lang === "kn"
