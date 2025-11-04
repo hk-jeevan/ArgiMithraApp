@@ -1,4 +1,35 @@
-.disease-tool input[type=file]{margin-top:8px}
-.disease-tool img{max-width:320px;border-radius:8px;margin-top:8px}
-.result-card{padding:16px;border-radius:10px;background:var(--panel);margin-top:12px;border:1px solid rgba(15,23,36,0.03)}
-.disease-tool .note{color:var(--muted);margin-top:10px}
+.disease-container {
+    max-width: 500px;
+    margin: auto;
+    background: #f3ffe7;
+    padding: 15px;
+    border-radius: 10px;
+  }
+  
+  .preview {
+    width: 100%;
+    border-radius: 8px;
+    margin: 12px 0;
+  }
+  
+  .result {
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 12px;
+  }
+  
+  .result ul {
+    margin-left: 20px;
+  }
+  
+  button {
+    padding: 10px 15px;
+    margin-top: 10px;
+    border-radius: 6px;
+  }
+  
+  button:disabled {
+    background: #ccc;
+  }
+  

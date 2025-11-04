@@ -2,24 +2,23 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from .assistant import router as assistant_router
+from .disease import router as disease_router 
 
-# Load .env so GEMINI_API_KEY is available
-load_dotenv()
+load_dotenv()  # Load .env
 
 app = FastAPI(title="AgriMithra Backend ✅ (Gemini AI)")
 
-# CORS Setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Set frontend URL in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include AI Chat Route
 app.include_router(assistant_router)
+app.include_router(disease_router)
 
 @app.get("/")
 def root():
-    return {"message": "✅ AgriMithra API Running Successfully!"}
+    return {"message": "✅ AgriMithra API Running!"}
