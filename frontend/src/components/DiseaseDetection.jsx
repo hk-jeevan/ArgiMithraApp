@@ -34,7 +34,11 @@ export default function DiseaseDetection() {
       const json = await res.json();
       const text = json.result || "No result";
 
-      const lines = text.split("\n").filter((l) => l.trim());
+      const lines = text
+        .split("\n")
+        .map((l) => l.trim())
+        .filter((l) => l.length);
+
       const title = lines[0];
       const details = lines.slice(1);
 
@@ -53,6 +57,17 @@ export default function DiseaseDetection() {
     }
   }
 
+  const renderLine = (line, i) => {
+    const clean = line.replace(/^[*•\-\s]+/g, "").trim();
+
+    if (/^Symptoms/i.test(clean)) return <h4 key={i}>🟡 Symptoms</h4>;
+    if (/^Organic/i.test(clean)) return <h4 key={i}>🌱 Organic Remedy</h4>;
+    if (/^Chemical/i.test(clean)) return <h4 key={i}>🧪 Chemical Remedy</h4>;
+    if (/^Prevention/i.test(clean)) return <h4 key={i}>✅ Prevention Tips</h4>;
+
+    return <li key={i}>{clean}</li>;
+  };
+
   return (
     <div className="disease-container">
       <h2>🌿 Plant Disease Detection</h2>
@@ -64,9 +79,7 @@ export default function DiseaseDetection() {
         onChange={(e) => handleFile(e.target.files[0])}
       />
 
-      {preview && (
-        <img className="preview" src={preview} alt="preview" />
-      )}
+      {preview && <img className="preview" src={preview} alt="preview" />}
 
       <button disabled={!file || loading} onClick={detect}>
         {loading ? "Analyzing..." : "Detect Disease"}
@@ -75,11 +88,7 @@ export default function DiseaseDetection() {
       {result && (
         <div className="result">
           <h3>{result.title}</h3>
-          <ul>
-            {result.details.map((d, i) => (
-              <li key={i}>{d}</li>
-            ))}
-          </ul>
+          <ul>{result.details.map(renderLine)}</ul>
           <small>⏱ {result.timestamp}</small>
         </div>
       )}
