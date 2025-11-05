@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from .assistant import router as assistant_router
 from .disease import router as disease_router 
+from .auth import router as auth_router
+
 
 load_dotenv()  # Load .env
 
@@ -18,6 +20,8 @@ app.add_middleware(
 
 app.include_router(assistant_router)
 app.include_router(disease_router)
+app.include_router(auth_router)
+
 
 @app.get("/")
 def root():

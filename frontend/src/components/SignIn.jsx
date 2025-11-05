@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./SignIn.css";
 
-const API_URL = "http://localhost:8000";
+const API_URL = "http://127.0.0.1:8000";
 
 export default function SignIn({ onCancel, onConfirm }) {
   const [mode, setMode] = useState("signin"); // signin | register
