@@ -4,7 +4,7 @@ import "./AgriAssistant.css";
 const API_URL = "http://localhost:8000";
 
 export default function AgriAssistant() {
-  const [lang, setLang] = useState("en"); // "en" | "kn"
+  const [lang, setLang] = useState("en");
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([
     {
@@ -16,130 +16,140 @@ export default function AgriAssistant() {
   const [listening, setListening] = useState(false);
   const [tts, setTts] = useState(true);
   const recognitionRef = useRef(null);
+  const [voices, setVoices] = useState([]);
 
-  // --- Voice input (safe & optional) ---
+  // ✅ Load Speech voices
   useEffect(() => {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!window.speechSynthesis) return;
+    const loadVoices = () => setVoices(window.speechSynthesis.getVoices());
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    return () => (window.speechSynthesis.onvoiceschanged = null);
+  }, []);
+
+  const cleanForSpeech = (text = "") => {
+    let t = text
+      .replace(/^#+\s*/gm, "")
+      .replace(/^\s*[-*•]\s+/gm, "");
+    ["*", "#", "•", "–", "-", "—", "▶️", "▶", "►", "➤"].forEach(
+      (ch) => (t = t.split(ch).join(""))
+    );
+    return t.replace(/\n{2,}/g, ". ").replace(/\n/g, ". ").trim();
+  };
+
+  const formatForUI = (txt = "") =>
+    txt
+      .replace(/\r/g, "")
+      .replace(/^#+\s*/gm, "")
+      .replace(/^\s*[-*•]\s+/gm, "• ")
+      .replace(/\n/g, "<br>");
+
+  // ✅ Setup Speech Recognition
+  useEffect(() => {
+    const SR = window.webkitSpeechRecognition || window.SpeechRecognition;
+
     if (!SR) {
       recognitionRef.current = null;
       return;
     }
     const r = new SR();
-    r.lang = lang === "kn" ? "kn-IN" : "en-IN";
+    r.maxAlternatives = 1; // ✅ Edge needs this to return results
+
+    r.continuous = false;
+    r.interimResults = false;
+
     r.onresult = (e) => {
       const spoken = e.results[0][0].transcript;
-      setInput(spoken);
-      sendMessage(spoken);
+      setInput(spoken); // Show input first ✅
+      setTimeout(() => sendMessage(spoken), 600); // Auto-send ✅
     };
     r.onend = () => setListening(false);
+
     recognitionRef.current = r;
-    // cleanup (avoid lingering handlers if component unmounts)
+
     return () => {
-      try {
-        r.onresult = null;
-        r.onend = null;
-        r.abort?.();
-        r.stop?.();
-      } catch {
-        // no-op
-      }
+      r.abort?.();
+      r.stop?.();
     };
-  }, [lang]);
+  }, []);
 
-  // --- Speak helper (optional) ---
-  function speak(text) {
-    try {
-      if (!tts || typeof window === "undefined" || !window.speechSynthesis) return;
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = lang === "kn" ? "kn-IN" : "en-IN";
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(u);
-    } catch  {
-      // no-op
-    }
-  }
+  // ✅ Speak Response
+  const speak = (text) => {
+    if (!tts || !window.speechSynthesis) return;
+    const clean = cleanForSpeech(text);
+    if (!clean) return;
 
-  // --- Call backend (Gemini 2.0 Flash) ---
+    const utter = new SpeechSynthesisUtterance(clean);
+    utter.lang = lang === "kn" ? "kn-IN" : "en-IN";
+
+    const voice =
+      (lang === "kn" && voices.find((v) => /kn/i.test(v.lang))) ||
+      voices.find((v) => /en-IN/i.test(v.lang)) ||
+      voices.find((v) => /en/i.test(v.lang));
+    if (voice) utter.voice = voice;
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  };
+
+  // ✅ Backend Call
   async function askGemini(question) {
     try {
       const res = await fetch(`${API_URL}/assistant/chat`, {
         method: "POST",
-        mode: "cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: question, lang }),
       });
-
-      if (!res.ok) {
-        // try to read error body for clarity
-        let detail = "";
-        try {
-          const e = await res.json();
-          detail = e?.detail || "";
-        } catch {
-          // no-op
-        }
-        throw new Error(detail || `AI request failed (${res.status})`);
-      }
-
       const data = await res.json();
-      return (data?.reply || "").trim();
-    } catch (error) {
-      console.error("Gemini Fetch Error:", error);
-      return ""; // caller will show fallback text
+      return cleanForSpeech(data?.reply || "");
+    } catch {
+      return "";
     }
   }
 
-  // --- Send message flow ---
+  // ✅ Send Chat Flow
   async function sendMessage(textOverride) {
     const text = (textOverride ?? input).trim();
     if (!text) return;
 
     setInput("");
-    setMessages((ms) => [...ms, { from: "user", text, time: Date.now() }]);
+    setMessages((m) => [...m, { from: "user", text, time: Date.now() }]);
 
-    const reply = await askGemini(text); 
+    const reply = await askGemini(text);
     const finalReply =
       reply ||
       (lang === "kn"
         ? "AI ಉತ್ತರ ಸಿಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
         : "AI couldn’t answer. Please try again.");
 
-    setMessages((ms) => [
-      ...ms,
-      { from: "bot", text: finalReply, time: Date.now() },
+    const formattedReply = formatForUI(finalReply);
+
+    setMessages((m) => [
+      ...m,
+      { from: "bot", text: formattedReply, time: Date.now() },
     ]);
+
     speak(finalReply);
   }
 
-  function onEnter(e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      sendMessage();
-    }
-  }
-
+  // ✅ Toggle Voice Input
   function toggleListening() {
     const r = recognitionRef.current;
     if (!r)
       return alert(
-        lang === "kn"
-          ? "ಧ್ವನಿ ಬೆಂಬಲ ಲಭ್ಯವಿಲ್ಲ."
-          : "Speech not supported on this browser."
+        lang === "kn" ? "ಧ್ವನಿ ಬೆಂಬಲ ಲಭ್ಯವಿಲ್ಲ" : "Speech not supported"
       );
+
+    window.speechSynthesis.cancel(); // 🔥 REQUIRED FIX
+
+    r.lang = lang === "kn" ? "kn-IN" : "en-IN"; // ✅ always set language here
+
     if (listening) {
-      try {
-        r.stop();
-      } catch {
-        // no-op
-      }
+      r.stop();
       setListening(false);
     } else {
-      try {
-        r.start();
-        setListening(true);
-      } catch {
-        // no-op
-      }
+      r.start();
+      setListening(true);
     }
   }
 
@@ -156,6 +166,7 @@ export default function AgriAssistant() {
             />
             <span>{lang === "kn" ? "ಉತ್ತರವನ್ನು ಓದಿ" : "Speak answers"}</span>
           </label>
+
           <div className="lang-switch">
             <button
               className={lang === "en" ? "active" : ""}
@@ -176,7 +187,10 @@ export default function AgriAssistant() {
       <div className="messages">
         {messages.map((m, i) => (
           <div key={i} className={`msg ${m.from}`}>
-            <div className="bubble">{m.text}</div>
+            <div
+              className="bubble"
+              dangerouslySetInnerHTML={{ __html: formatForUI(m.text) }}
+            ></div>
             <div className="time">{new Date(m.time).toLocaleTimeString()}</div>
           </div>
         ))}
@@ -185,26 +199,27 @@ export default function AgriAssistant() {
       <div className="chat-controls">
         <input
           value={input}
+          placeholder={
+            lang === "kn" ? "ನಿಮ್ಮ ಪ್ರಶ್ನೆ..." : "Ask your question..."
+          }
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={onEnter}
-          placeholder={lang === "kn" ? "ನಿಮ್ಮ ಪ್ರಶ್ನೆ..." : "Type your question..."}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
         <button
           className={`mic ${listening ? "on" : ""}`}
           onClick={toggleListening}
-          title={lang === "kn" ? "ಮಾತನಾಡಿ" : "Speak"}
         >
-          {listening ? "🎙️" : "🎤"}
+          🎤
         </button>
         <button className="send" onClick={() => sendMessage()}>
-          Send
+          ➤
         </button>
       </div>
 
       <div className="note">
         {lang === "kn"
-          ? "ಸೂಚನೆ: AI ಉತ್ತರಗಳು ಇಂಟರ್ನೆಟ್ ಮೇಲೆ ಅವಲಂಬಿತ."
-          : "Tip: AI answers come live from Gemini; keep internet on."}
+          ? "ಸೂಚನೆ: ಉತ್ತರಗಳು Gemini AI ಬಳಸಿ ಬರುತ್ತವೆ"
+          : "Tip: Answers from Gemini AI"}
       </div>
     </div>
   );
