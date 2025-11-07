@@ -48,4 +48,5 @@ frontend/.env
 # Environment & secrets
 .env
 *.db
+.env.example
 
